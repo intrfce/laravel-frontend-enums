@@ -5,7 +5,7 @@ namespace Intrfce\LaravelFrontendEnums\Console\Commands;
 use Illuminate\Console\Command;
 use ReflectionClass;
 
-class PublishEnums extends Command
+class PublishEnumsCommand extends Command
 {
 
     protected $signature = 'publish:enums-to-javascript';
