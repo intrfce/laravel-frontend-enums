@@ -52,9 +52,10 @@ class Registry
         return $this->toPublish;
     }
 
-    public function asTypescript(): bool
+    public function asTypescript(): self
     {
-        return $this->asTypescript;
+        $this->asTypescript = true;
+        return $this;
     }
 
     public function toDirectory(string $path): self

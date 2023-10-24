@@ -15,7 +15,9 @@ class PublishEnumsCommand extends Command
     public function handle(): void
     {
 
-        foreach (app('publish_enums_registry')->get() as $enumClass) {
+        $registry = app('publish_enums_registry');
+
+        foreach ($registry->get() as $enumClass) {
 
             $enumClass = trim($enumClass);
 
@@ -24,18 +26,30 @@ class PublishEnumsCommand extends Command
             if (class_exists($enumClass)) {
 
                 foreach ($enumClass::cases() as $enum) {
-                    $caseList[] = str_repeat(' ', 4)."{$enum->name}: ".$this->printValueAsJs($enum);
+                    $caseList[] = match($registry->asTypescript) {
+                        true => str_repeat(' ', 4)."{$enum->name} = ".$this->printValueAsJs($enum),
+                        false => str_repeat(' ', 4)."{$enum->name}: ".$this->printValueAsJs($enum),
+                    };
                 }
 
                 $name = (new ReflectionClass($enumClass))->getShortName();
 
-                $jsFileContent = collect([
-                    "export const {$name} = {",
-                    collect($caseList)->implode(','.PHP_EOL, ''),
-                    '};',
-                ])->implode(PHP_EOL);
+                $jsFileContent = match($registry->asTypescript) {
+                    true => collect([
+                        "export enum {$name} {",
+                        collect($caseList)->implode(','.PHP_EOL, ''),
+                        '}',
+                    ])->implode(PHP_EOL),
+                    false => collect([
+                        "export const {$name} = {",
+                        collect($caseList)->implode(','.PHP_EOL, ''),
+                        '};',
+                    ])->implode(PHP_EOL)
+                };
 
-                $jsFilePath = app('publish_enums_registry')->publishPath."/{$name}.enum.js";
+                $extension = $registry->asTypescript ? ".ts" : ".enum.js";
+
+                $jsFilePath = app('publish_enums_registry')->publishPath."/{$name}{$extension}";
 
                 file_put_contents($jsFilePath, $jsFileContent);
 
