@@ -1,10 +1,10 @@
-# Very short description of the package
+# Laravel Frontend Enums
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/intrfce/laravel-frontend-enums.svg?style=flat-square)](https://packagist.org/packages/intrfce/laravel-frontend-enums)
 [![Total Downloads](https://img.shields.io/packagist/dt/intrfce/laravel-frontend-enums.svg?style=flat-square)](https://packagist.org/packages/intrfce/laravel-frontend-enums)
 ![GitHub Actions](https://github.com/intrfce/laravel-frontend-enums/actions/workflows/main.yml/badge.svg)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+Publish your PHP enums to the frontend of our application so you can refer to them in your JavaScript code.
 
 ## Installation
 
@@ -16,8 +16,38 @@ composer require intrfce/laravel-frontend-enums
 
 ## Usage
 
+In your `AppServiceProvider.php`, tell the package which Enums you want to publish:
+
 ```php
-// Usage description here
+
+use Intrfce\LaravelFrontendEnums\Facades\PublishEnums;
+
+PublishEnums::publish([
+    \App\Enums\MyEnum::class,
+    \App\Enums\MyOtherEnum::class,
+])->toDirectory(resource_path('js/Enums'));
+```
+Then run the publish command:
+
+```php
+php artisan publish:enums-to-javascript
+```
+
+Your enums will be waiting at the path you specified with the extension `.enum.js`:
+
+```
+MyEnum.enum.js
+MyOtherEnum.enum.js
+```
+
+You can then import and use them in your JavaScript code:
+
+```js  
+import {MyEnum} from './Enums/MyEnum.enum.js';
+import {MyOtherEnum} from './Enums/MyOtherEnum.enum.js';
+
+console.log(MyEnum.FOO); // 0
+console.log(MyOtherEnum.BAR); // 'bar'
 ```
 
 ### Testing
@@ -46,7 +76,3 @@ If you discover any security related issues, please email dan@danmatthews.me ins
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-## Laravel Package Boilerplate
-
-This package was generated using the [Laravel Package Boilerplate](https://laravelpackageboilerplate.com).
