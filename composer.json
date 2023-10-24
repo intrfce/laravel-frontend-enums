@@ -51,7 +51,7 @@
                 "Intrfce\\LaravelFrontendEnums\\LaravelFrontendEnumsServiceProvider"
             ],
             "aliases": {
-                "LaravelFrontendEnums": "Intrfce\\LaravelFrontendEnums\\LaravelFrontendEnumsFacade"
+                "PublishEnums": "Intrfce\\LaravelFrontendEnums\\Facades\\PublishEnums"
             }
         }
     }
