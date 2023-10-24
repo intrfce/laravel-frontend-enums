@@ -3,7 +3,7 @@
 namespace Intrfce\LaravelFrontendEnums;
 
 use Illuminate\Support\ServiceProvider;
-use Intrfce\LaravelFrontendEnums\Console\Commands\PublishEnums;
+use Intrfce\LaravelFrontendEnums\Console\Commands\PublishEnumsCommand;
 
 class LaravelFrontendEnumsServiceProvider extends ServiceProvider
 {
@@ -42,7 +42,7 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
 
             // Registering package commands.
             $this->commands([
-               PublishEnums::class,
+                PublishEnumsCommand::class,
             ]);
         }
     }
