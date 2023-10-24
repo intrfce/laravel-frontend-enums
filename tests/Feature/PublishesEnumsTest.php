@@ -4,9 +4,9 @@ use Illuminate\Support\Facades\Storage;
 use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
 
 afterEach(function() {
-    \Illuminate\Support\Facades\File::allFiles('tests/Publish')->each(function($file) {
-        dump($file);
-    });
+    collect(\Illuminate\Support\Facades\File::allFiles('tests/Publish'))->reject(function($file) {
+        return str_contains('.gitkeep', $file->getFilename());
+    })->each(fn ($file) => \Illuminate\Support\Facades\File::delete($file->getPathname()));
 });
 
 test("The package registry picks up on the enums you list", function() {
