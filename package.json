@@ -16,7 +16,7 @@
   },
   "lint-staged": {
         "**/*.php*": [
-            "vendor/bin/duster lint"
+            "vendor/bin/duster fix"
         ]
     }
 }

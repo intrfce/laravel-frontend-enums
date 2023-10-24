@@ -3,11 +3,10 @@
 namespace Intrfce\LaravelFrontendEnums;
 
 use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
-use ReflectionClass;
+use ReflectionException;
 
 class Registry
 {
-
     public array $toPublish = [];
 
     public bool $asTypescript = false;
@@ -22,6 +21,7 @@ class Registry
     public function setPublishPath(string $path): self
     {
         $this->publishPath = $path;
+
         return $this;
     }
 
@@ -31,20 +31,8 @@ class Registry
         $this->validateAllEnums($items);
 
         $this->toPublish = array_merge($this->toPublish, $items);
-        return $this;
-    }
 
-    /**
-     * @throws \ReflectionException
-     * @throws ArgumentIsNotEnumException
-     */
-    protected function validateAllEnums(array $items): void
-    {
-        foreach ($items as $enumClass) {
-            if (!is_string($enumClass) || !enum_exists($enumClass)) {
-                throw new ArgumentIsNotEnumException("Class {$enumClass} is not an enum.");
-            }
-        }
+        return $this;
     }
 
     public function get(): array
@@ -55,12 +43,27 @@ class Registry
     public function asTypescript(): self
     {
         $this->asTypescript = true;
+
         return $this;
     }
 
     public function toDirectory(string $path): self
     {
         $this->publishPath = $path;
+
         return $this;
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ArgumentIsNotEnumException
+     */
+    protected function validateAllEnums(array $items): void
+    {
+        foreach ($items as $enumClass) {
+            if (! is_string($enumClass) || ! enum_exists($enumClass)) {
+                throw new ArgumentIsNotEnumException("Class {$enumClass} is not an enum.");
+            }
+        }
     }
 }

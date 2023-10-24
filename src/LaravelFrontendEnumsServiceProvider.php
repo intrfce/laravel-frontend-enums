@@ -22,7 +22,7 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('laravel-frontend-enums.php'),
+                __DIR__ . '/../config/config.php' => config_path('laravel-frontend-enums.php'),
             ], 'config');
 
             // Publishing the views.

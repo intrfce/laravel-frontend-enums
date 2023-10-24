@@ -5,8 +5,8 @@ namespace Intrfce\LaravelFrontendEnums\Tests;
 use Intrfce\LaravelFrontendEnums\LaravelFrontendEnumsServiceProvider;
 use Intrfce\LaravelFrontendEnums\Tests\Providers\TestApplicationServiceProvider;
 
-class TestCase extends \Orchestra\Testbench\TestCase {
-
+class TestCase extends \Orchestra\Testbench\TestCase
+{
     /**
      * Get package providers.
      *
@@ -20,5 +20,4 @@ class TestCase extends \Orchestra\Testbench\TestCase {
             TestApplicationServiceProvider::class,
         ];
     }
-
 }
