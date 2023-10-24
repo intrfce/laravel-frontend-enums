@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^8.1.0",
-        "illuminate/support": "^v10.*"
+        "illuminate/support": "^v10.0.0"
     },
     "require-dev": {
         "orchestra/testbench": "^8.14",
