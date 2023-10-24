@@ -1,5 +1,7 @@
 <?php
 
+namespace Intrfce\LaravelFrontendEnums\Facades;
+
 use Illuminate\Support\Facades\Facade;
 
 class PublishEnums extends Facade {

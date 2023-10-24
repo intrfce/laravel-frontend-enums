@@ -1,18 +1,12 @@
 <?php
 
-namespace Intrfce\LaravelFrontendEnums;
+namespace Intrfce\LaravelFrontendEnums\Console\Commands;
 
 use Illuminate\Console\Command;
 use ReflectionClass;
 
 class PublishEnums extends Command
 {
-    public static array $toPublish = [];
-
-    public static function publish(array $items)
-    {
-        static::$toPublish = array_merge(static::$toPublish, $items);
-    }
 
     protected $signature = 'publish:enums-to-javascript';
 
@@ -21,7 +15,7 @@ class PublishEnums extends Command
     public function handle(): void
     {
 
-        foreach (static::$toPublish as $enumClass) {
+        foreach (app('publish_enums_registry')->get() as $enumClass) {
 
             $enumClass = trim($enumClass);
 
@@ -41,7 +35,8 @@ class PublishEnums extends Command
                     '};',
                 ])->implode(PHP_EOL);
 
-                $jsFilePath = base_path("resources/js/Enums/{$name}.enum.js");
+                $jsFilePath = app('publish_enums_registry')->publishPath."/{$name}.enum.js";
+
                 file_put_contents($jsFilePath, $jsFileContent);
 
                 \Laravel\Prompts\info("Published: {$jsFilePath}");

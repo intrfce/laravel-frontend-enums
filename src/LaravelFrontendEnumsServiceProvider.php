@@ -3,6 +3,7 @@
 namespace Intrfce\LaravelFrontendEnums;
 
 use Illuminate\Support\ServiceProvider;
+use Intrfce\LaravelFrontendEnums\Console\Commands\PublishEnums;
 
 class LaravelFrontendEnumsServiceProvider extends ServiceProvider
 {
@@ -41,7 +42,7 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
 
             // Registering package commands.
             $this->commands([
-                PublishEnums::class
+               PublishEnums::class,
             ]);
         }
     }
@@ -55,8 +56,8 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
         // $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'laravel-frontend-enums');
 
         // Register the main class to use with the facade
-        $this->app->singleton('laravel-frontend-enums', function () {
-            return new LaravelFrontendEnums;
+        $this->app->singleton('publish_enums_registry', function () {
+            return new Registry;
         });
     }
 }
