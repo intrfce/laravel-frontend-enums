@@ -50,6 +50,29 @@ console.log(MyEnum.FOO); // 0
 console.log(MyOtherEnum.BAR); // 'bar'
 ```
 
+## Typescript Support
+
+Typescript support is baked in: just add `->asTypescript()` to the list of enums in your `AppServiceProvider.php`:
+
+```php
+PublishEnums::publish([
+    \App\Enums\MyEnum::class,
+    \App\Enums\MyOtherEnum::class,
+])
+->asTypescript()
+->toDirectory(resource_path('js/Enums'));
+```
+
+Files will be output as `.ts` files and Typescript native enums:
+
+```ts
+export enum MyEnum {
+    FOO = 0,
+    BAR = 1,
+    BAZ = 2,
+}
+```
+
 ### Testing
 
 ```bash
