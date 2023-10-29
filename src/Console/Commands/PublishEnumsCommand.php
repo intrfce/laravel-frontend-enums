@@ -5,6 +5,8 @@ namespace Intrfce\LaravelFrontendEnums\Console\Commands;
 use Illuminate\Console\Command;
 use ReflectionClass;
 
+use function Laravel\Prompts\info;
+
 class PublishEnumsCommand extends Command
 {
     protected $signature = 'publish:enums-to-javascript';
@@ -52,7 +54,7 @@ class PublishEnumsCommand extends Command
 
                 file_put_contents($jsFilePath, $jsFileContent);
 
-                Laravel\Prompts\info("Published: {$jsFilePath}");
+                info("Published: {$jsFilePath}");
             } else {
                 $this->error("Enum class {$enumClass} not found.");
             }
