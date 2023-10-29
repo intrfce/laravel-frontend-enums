@@ -52,7 +52,7 @@ class PublishEnumsCommand extends Command
 
                 file_put_contents($jsFilePath, $jsFileContent);
 
-                \Laravel\Prompts\info("Published: {$jsFilePath}");
+                Laravel\Prompts\info("Published: {$jsFilePath}");
             } else {
                 $this->error("Enum class {$enumClass} not found.");
             }

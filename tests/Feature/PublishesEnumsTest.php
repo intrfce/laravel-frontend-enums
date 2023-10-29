@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\File;
 use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
+use Intrfce\LaravelFrontendEnums\Facades\PublishEnums;
 
 afterEach(function () {
-    collect(\Illuminate\Support\Facades\File::allFiles('tests/Publish'))->reject(function ($file) {
+    collect(File::allFiles('tests/Publish'))->reject(function ($file) {
         return str_contains('.gitkeep', $file->getFilename());
-    })->each(fn ($file) => \Illuminate\Support\Facades\File::delete($file->getPathname()));
+    })->each(fn ($file) => File::delete($file->getPathname()));
 });
 
 test('The package registry picks up on the enums you list', function () {
@@ -16,7 +18,7 @@ test('The package registry picks up on the enums you list', function () {
 
 test('Listing anything other than an enum produces an exception', function ($test) {
 
-    \Intrfce\LaravelFrontendEnums\Facades\PublishEnums::publish([
+    PublishEnums::publish([
         $test,
     ]);
 
@@ -30,10 +32,10 @@ test('Listing anything other than an enum produces an exception', function ($tes
 
 test('It publishes the enums to the default directory at resources/js/Enums', function () {
     $path = getcwd() . '/tests/Publish';
-    \Intrfce\LaravelFrontendEnums\Facades\PublishEnums::setPublishPath($path);
+    PublishEnums::setPublishPath($path);
     $this->artisan('publish:enums-to-javascript');
 
-    collect(\Intrfce\LaravelFrontendEnums\Facades\PublishEnums::get())->each(function ($enum) use ($path) {
+    collect(PublishEnums::get())->each(function ($enum) use ($path) {
         $name = (new ReflectionClass($enum))->getShortName();
         $this->assertFileExists("{$path}/{$name}.enum.js");
         $contents = file_get_contents("{$path}/{$name}.enum.js");
@@ -45,10 +47,10 @@ test('It publishes the enums to the default directory at resources/js/Enums', fu
 
 test('It publishes the enums to the default directory at resources/js/Enums as typescript files.', function () {
     $path = getcwd() . '/tests/Publish';
-    \Intrfce\LaravelFrontendEnums\Facades\PublishEnums::setPublishPath($path)->asTypescript();
+    PublishEnums::setPublishPath($path)->asTypescript();
     $this->artisan('publish:enums-to-javascript');
 
-    collect(\Intrfce\LaravelFrontendEnums\Facades\PublishEnums::get())->each(function ($enum) use ($path) {
+    collect(PublishEnums::get())->each(function ($enum) use ($path) {
         $name = (new ReflectionClass($enum))->getShortName();
         $this->assertFileExists("{$path}/{$name}.ts");
         $contents = file_get_contents("{$path}/{$name}.ts");
