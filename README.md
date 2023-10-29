@@ -73,10 +73,28 @@ export enum MyEnum {
 }
 ```
 
-### Testing
+## Automatically generate javascript files on change.
 
-```bash
-composer test
+You can use the [`vite-plugin-watch`](https://github.com/lepikhinb/vite-plugin-watch) package from [lepikhinb](https://github.com/lepikhinb) to automatically generate your javascript files when you make changes to your PHP enums:
+
+```php
+npm install -D vite-plugin-watch
+```
+
+Then add the plugin to your `vite.config.js`:
+
+```js
+import { defineConfig } from "vite"
+import { watch } from "vite-plugin-watch"
+
+export default defineConfig({
+  plugins: [ 
+    watch({
+      pattern: "app/Enums/**/*.php",
+      command: "php artisan publish:enums-to-javascript",
+    }),
+  ],
+})
 ```
 
 ### Changelog
