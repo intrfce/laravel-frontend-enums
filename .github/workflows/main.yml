@@ -28,6 +28,8 @@ jobs:
             testbench: ^8.0
           - laravel: 10.0
             testbench: ^9.0
+          - dependency-version: prefer-stable
+            textbench: ^9.0
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
 
