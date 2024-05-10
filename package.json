@@ -7,6 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
+  "repositories": [
+   {
+        "type": "path",
+        "url": "/Users/danmatthews/Code/laravel-frontend-enums"
+    }
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
