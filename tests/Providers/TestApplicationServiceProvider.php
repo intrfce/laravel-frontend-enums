@@ -18,7 +18,5 @@ class TestApplicationServiceProvider extends ServiceProvider
             ->toDirectory(resource_path('js/Enums'));
     }
 
-    public function boot(): void
-    {
-    }
+    public function boot(): void {}
 }
