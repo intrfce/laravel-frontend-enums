@@ -21,8 +21,8 @@
     "laravel/prompts": "v0.*"
   },
   "require-dev": {
-    "orchestra/testbench": "^9.1",
-    "pestphp/pest": "^2.23",
+    "orchestra/testbench": "^8.21 || ^9.0 || ^10.0",
+    "pestphp/pest": "^2.32 || ^3.7",
     "tightenco/duster": "^2.5"
   },
   "autoload": {
