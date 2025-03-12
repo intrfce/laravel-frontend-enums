@@ -20,17 +20,17 @@ jobs:
           - laravel: 12.*
             testbench: ^10.0
         exclude:
-          - laravel: 10.0
+          - laravel: 10.*
             testbench: ^9.0
-          - laravel: 10.0
+          - laravel: 10.*
             testbench: ^10.0
-          - laravel: 11.0
+          - laravel: 11.*
             testbench: ^8.0
-          - laravel: 11.0
+          - laravel: 11.*
             testbench: ^10.0
-          - laravel: 12.0
+          - laravel: 12.*
             testbench: ^8.0
-          - laravel: 12.0
+          - laravel: 12.*
             testbench: ^9.0
 
           # - dependency-version: prefer-stable
