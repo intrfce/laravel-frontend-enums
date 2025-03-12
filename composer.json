@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": "^8.2.0",
-    "laravel/framework": "^10.0 || ^11.0 || ^12.0",
+    "laravel/framework": "^11.0 || ^12.0",
     "laravel/prompts": "v0.*"
   },
   "require-dev": {
