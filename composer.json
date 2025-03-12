@@ -1,60 +1,59 @@
 {
-    "name": "intrfce/laravel-frontend-enums",
-    "description": "Stop using 'magic' strings/numbers in your frontend Javascript and use your actual application enums instead.",
-    "keywords": [
-        "intrfce",
-        "laravel-frontend-enums"
-    ],
-    "homepage": "https://github.com/intrfce/laravel-frontend-enums",
-    "license": "MIT",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Dan Matthews",
-            "email": "dan@danmatthews.me",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": "^8.2.0",
-        "laravel/framework": "^v11.0.0",
-        "laravel/prompts": "v0.*"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^9.1",
-        "pestphp/pest": "^2.23",
-        "phpunit/phpunit": "^10.0",
-        "tightenco/duster": "^2.5"
-    },
-    "autoload": {
-        "psr-4": {
-            "Intrfce\\LaravelFrontendEnums\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Intrfce\\LaravelFrontendEnums\\Tests\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest --coverage-html coverage"
-
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Intrfce\\LaravelFrontendEnums\\LaravelFrontendEnumsServiceProvider"
-            ],
-            "aliases": {
-                "PublishEnums": "Intrfce\\LaravelFrontendEnums\\Facades\\PublishEnums"
-            }
-        }
+  "name": "intrfce/laravel-frontend-enums",
+  "description": "Stop using 'magic' strings/numbers in your frontend Javascript and use your actual application enums instead.",
+  "keywords": [
+    "intrfce",
+    "laravel-frontend-enums"
+  ],
+  "homepage": "https://github.com/intrfce/laravel-frontend-enums",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Dan Matthews",
+      "email": "dan@danmatthews.me",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": "^8.2.0",
+    "laravel/framework": "^v11.0.0|^12.0.0",
+    "laravel/prompts": "v0.*"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^9.1",
+    "pestphp/pest": "^2.23",
+    "phpunit/phpunit": "^10.0",
+    "tightenco/duster": "^2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Intrfce\\LaravelFrontendEnums\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Intrfce\\LaravelFrontendEnums\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "test-coverage": "vendor/bin/pest --coverage-html coverage"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Intrfce\\LaravelFrontendEnums\\LaravelFrontendEnumsServiceProvider"
+      ],
+      "aliases": {
+        "PublishEnums": "Intrfce\\LaravelFrontendEnums\\Facades\\PublishEnums"
+      }
+    }
+  }
 }
