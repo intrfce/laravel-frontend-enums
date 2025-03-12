@@ -23,7 +23,7 @@
   "require-dev": {
     "orchestra/testbench": "^9.1",
     "pestphp/pest": "^2.23",
-    "phpunit/phpunit": "^10.0",
+    "phpunit/phpunit": "^10.0|^11.0",
     "tightenco/duster": "^2.5"
   },
   "autoload": {
