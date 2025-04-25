@@ -9,7 +9,7 @@ use function Laravel\Prompts\info;
 
 class PublishEnumsCommand extends Command
 {
-    protected $signature = 'publish:enums-to-javascript';
+    protected $signature = 'publish:enums-to-javascript {--compact}';
 
     protected $description = 'Publishes the listed enum classes to Javascript classes so they can be accessed easily.';
 
@@ -17,7 +17,7 @@ class PublishEnumsCommand extends Command
     {
 
         $registry = app('publish_enums_registry');
-
+        $published = 0;
         foreach ($registry->get() as $enumClass) {
 
             $enumClass = trim($enumClass);
@@ -54,11 +54,21 @@ class PublishEnumsCommand extends Command
 
                 file_put_contents($jsFilePath, $jsFileContent);
 
-                info("Published: {$jsFilePath}");
+                if (! $this->option('compact')) {
+                    info("Published: {$jsFilePath}");
+                }
+
+                $published++;
+
             } else {
                 $this->error("Enum class {$enumClass} not found.");
             }
         }
+
+        if ($this->option('compact')) {
+            info("Published {$published} files.");
+        }
+
     }
 
     private function printValueAsJs(mixed $enum): string
