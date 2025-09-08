@@ -3,6 +3,7 @@
 namespace Intrfce\LaravelFrontendEnums\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use ReflectionClass;
 
 use function Laravel\Prompts\info;
@@ -50,12 +51,16 @@ class PublishEnumsCommand extends Command
 
                 $extension = $registry->asTypescript ? '.ts' : '.enum.js';
 
-                $jsFilePath = app('publish_enums_registry')->publishPath . "/{$name}{$extension}";
+                $jsFilePath = app('publish_enums_registry')->publishPath;
 
-                file_put_contents($jsFilePath, $jsFileContent);
+                $jsFilePathAndName = $jsFilePath . "/{$name}{$extension}";
+
+                File::ensureDirectoryExists($jsFilePath);
+
+                File::put($jsFilePathAndName, $jsFileContent);
 
                 if (! $this->option('compact')) {
-                    info("Published: {$jsFilePath}");
+                    info("Published: {$jsFilePathAndName}");
                 }
 
                 $published++;
