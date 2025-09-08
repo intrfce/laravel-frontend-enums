@@ -8,6 +8,8 @@ afterEach(function () {
     collect(File::allFiles('tests/Publish'))->reject(function ($file) {
         return str_contains('.gitkeep', $file->getFilename());
     })->each(fn ($file) => File::delete($file->getPathname()));
+
+    File::deleteDirectory('tests/Publish/Nested');
 });
 
 test('The package registry picks up on the enums you list', function () {
@@ -58,4 +60,12 @@ test('It publishes the enums to the default directory at resources/js/Enums as t
             ->and($contents)->toContain((string) $case->value)
             ->and($contents)->toContain("export enum {$name} {"));
     });
+});
+
+test('that it creates any missing folders', function () {
+    $path = getcwd() . '/tests/Publish/Nested';
+    expect(File::isDirectory($path))->toBeFalse();
+    PublishEnums::setPublishPath($path);
+    $this->artisan('publish:enums-to-javascript');
+    expect(File::isDirectory($path))->toBeTrue();
 });
