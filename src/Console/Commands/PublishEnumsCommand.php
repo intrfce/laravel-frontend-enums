@@ -50,12 +50,18 @@ class PublishEnumsCommand extends Command
 
                 $extension = $registry->asTypescript ? '.ts' : '.enum.js';
 
-                $jsFilePath = app('publish_enums_registry')->publishPath . "/{$name}{$extension}";
+                $jsFilePath = app('publish_enums_registry')->publishPath;
+                $jsFilePathAndName = $jsFilePath . "\\{$name}{$extension}";
 
-                file_put_contents($jsFilePath, $jsFileContent);
+                if (!is_dir($jsFilePath)) {
+                    // dir doesn't exist, make it
+                    mkdir($jsFilePath);
+                }
+
+                file_put_contents($jsFilePathAndName, $jsFileContent);
 
                 if (! $this->option('compact')) {
-                    info("Published: {$jsFilePath}");
+                    info("Published: {$jsFilePathAndName}");
                 }
 
                 $published++;
