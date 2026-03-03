@@ -27,8 +27,10 @@ class PublishEnumsCommand extends Command
 
             if (class_exists($enumClass)) {
 
+                $useTypescript = $registry->isTypescript($enumClass);
+
                 foreach ($enumClass::cases() as $enum) {
-                    $caseList[] = match ($registry->asTypescript) {
+                    $caseList[] = match ($useTypescript) {
                         true => str_repeat(' ', 4) . "{$enum->name} = " . $this->printValueAsJs($enum),
                         false => str_repeat(' ', 4) . "{$enum->name}: " . $this->printValueAsJs($enum),
                     };
@@ -36,7 +38,7 @@ class PublishEnumsCommand extends Command
 
                 $name = (new ReflectionClass($enumClass))->getShortName();
 
-                $jsFileContent = match ($registry->asTypescript) {
+                $jsFileContent = match ($useTypescript) {
                     true => collect([
                         "export enum {$name} {",
                         collect($caseList)->implode(',' . PHP_EOL, ''),
@@ -49,7 +51,7 @@ class PublishEnumsCommand extends Command
                     ])->implode(PHP_EOL)
                 };
 
-                $extension = $registry->asTypescript ? '.ts' : '.enum.js';
+                $extension = $useTypescript ? '.ts' : '.enum.js';
 
                 $jsFilePath = app('publish_enums_registry')->publishPath;
 
