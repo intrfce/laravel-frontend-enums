@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\File;
 use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
 use Intrfce\LaravelFrontendEnums\Facades\PublishEnums;
 use Intrfce\LaravelFrontendEnums\Tests\Classes\NotAnEnum;
+use Intrfce\LaravelFrontendEnums\Tests\Enums\Directions;
 use Intrfce\LaravelFrontendEnums\Tests\Enums\Sizes;
 use Intrfce\LaravelFrontendEnums\Tests\Enums\Statuses;
 
@@ -46,7 +47,8 @@ test('It publishes the enums to the default directory at resources/js/Enums', fu
         $contents = file_get_contents("{$path}/{$name}.enum.js");
         collect($enum::cases())->each(fn ($case) => expect($contents)->toContain($case->name)
             ->and($contents)->toContain((string) $case->value)
-            ->and($contents)->toContain("export const {$name} = {"));
+            ->and($contents)->toContain("export const {$name} = {")
+            ->and($contents)->toContain("} as const;"));
     });
 });
 
@@ -88,7 +90,8 @@ test('enums with the #[PublishEnum] attribute are discovered and published', fun
     $contents = file_get_contents("{$path}/{$name}.enum.js");
     collect(Sizes::cases())->each(fn ($case) => expect($contents)->toContain($case->name)
         ->and($contents)->toContain((string) $case->value)
-        ->and($contents)->toContain("export const {$name} = {"));
+        ->and($contents)->toContain("export const {$name} = {")
+            ->and($contents)->toContain("} as const;"));
 });
 
 test('attribute-discovered enums are merged with manually registered enums', function () {
@@ -131,6 +134,42 @@ test('non-enum classes with #[PublishEnum] attribute are not discovered', functi
 
     // NotAnEnum has #[PublishEnum] but is a class, not an enum — it should be excluded.
     expect($all)->not->toContain(NotAnEnum::class);
+});
+
+test('unit enums (non-backed) are published using case names as values', function () {
+    $path = getcwd() . '/tests/Publish';
+
+    PublishEnums::publish([Directions::class]);
+    PublishEnums::setPublishPath($path);
+
+    $this->artisan('publish:enums-to-javascript');
+
+    $name = (new ReflectionClass(Directions::class))->getShortName();
+    $this->assertFileExists("{$path}/{$name}.enum.js");
+    $contents = file_get_contents("{$path}/{$name}.enum.js");
+
+    expect($contents)->toContain('North: "North"')
+        ->and($contents)->toContain('South: "South"')
+        ->and($contents)->toContain('East: "East"')
+        ->and($contents)->toContain('West: "West"')
+        ->and($contents)->toContain("} as const;");
+});
+
+test('unit enums (non-backed) are published correctly as typescript', function () {
+    $path = getcwd() . '/tests/Publish';
+
+    PublishEnums::publish([Directions::class]);
+    PublishEnums::setPublishPath($path)->asTypescript();
+
+    $this->artisan('publish:enums-to-javascript');
+
+    $name = (new ReflectionClass(Directions::class))->getShortName();
+    $this->assertFileExists("{$path}/{$name}.ts");
+    $contents = file_get_contents("{$path}/{$name}.ts");
+
+    expect($contents)->toContain('North = "North"')
+        ->and($contents)->toContain('South = "South"')
+        ->and($contents)->toContain("export enum {$name} {");
 });
 
 test('attribute-discovered enums are not duplicated with manually registered ones', function () {

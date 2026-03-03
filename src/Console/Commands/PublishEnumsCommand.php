@@ -2,6 +2,7 @@
 
 namespace Intrfce\LaravelFrontendEnums\Console\Commands;
 
+use BackedEnum;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use ReflectionClass;
@@ -47,7 +48,7 @@ class PublishEnumsCommand extends Command
                     false => collect([
                         "export const {$name} = {",
                         collect($caseList)->implode(',' . PHP_EOL, ''),
-                        '};',
+                        '} as const;',
                     ])->implode(PHP_EOL)
                 };
 
@@ -80,6 +81,10 @@ class PublishEnumsCommand extends Command
 
     private function printValueAsJs(mixed $enum): string
     {
+        if (! $enum instanceof BackedEnum) {
+            return '"' . $enum->name . '"';
+        }
+
         return match (gettype($enum->value)) {
             'string' => '"' . $enum->value . '"',
             'integer', 'double' => $enum->value,
