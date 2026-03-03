@@ -48,7 +48,7 @@ test('It publishes the enums to the default directory at resources/js/Enums', fu
         collect($enum::cases())->each(fn ($case) => expect($contents)->toContain($case->name)
             ->and($contents)->toContain((string) $case->value)
             ->and($contents)->toContain("export const {$name} = {")
-            ->and($contents)->toContain("} as const;"));
+            ->and($contents)->toContain('} as const;'));
     });
 });
 
@@ -91,7 +91,7 @@ test('enums with the #[PublishEnum] attribute are discovered and published', fun
     collect(Sizes::cases())->each(fn ($case) => expect($contents)->toContain($case->name)
         ->and($contents)->toContain((string) $case->value)
         ->and($contents)->toContain("export const {$name} = {")
-            ->and($contents)->toContain("} as const;"));
+        ->and($contents)->toContain('} as const;'));
 });
 
 test('attribute-discovered enums are merged with manually registered enums', function () {
@@ -152,7 +152,7 @@ test('unit enums (non-backed) are published using case names as values', functio
         ->and($contents)->toContain('South: "South"')
         ->and($contents)->toContain('East: "East"')
         ->and($contents)->toContain('West: "West"')
-        ->and($contents)->toContain("} as const;");
+        ->and($contents)->toContain('} as const;');
 });
 
 test('unit enums (non-backed) are published correctly as typescript', function () {
