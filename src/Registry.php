@@ -83,5 +83,4 @@ class Registry
             ->withAttribute(PublishEnum::class)
             ->get();
     }
-
 }

@@ -52,7 +52,7 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/config/laravel-frontend-enums.php', 'laravel-frontend-enums');
+        $this->mergeConfigFrom(__DIR__ . '/config/laravel-frontend-enums.php', 'laravel-frontend-enums');
 
         // Register the main class to use with the facade
         $this->app->singleton('publish_enums_registry', function () {

@@ -11,13 +11,13 @@ use function Laravel\Prompts\info;
 
 class PublishEnumsCommand extends Command
 {
-    protected $signature = "publish:enums-to-javascript {--compact}";
+    protected $signature = 'publish:enums-to-javascript {--compact}';
 
-    protected $description = "Publishes the listed enum classes to Javascript classes so they can be accessed easily.";
+    protected $description = 'Publishes the listed enum classes to Javascript classes so they can be accessed easily.';
 
     public function handle(): void
     {
-        $registry = app("publish_enums_registry");
+        $registry = app('publish_enums_registry');
         $published = 0;
         foreach ($registry->get() as $enumClass) {
             $enumClass = trim($enumClass);
@@ -29,10 +29,10 @@ class PublishEnumsCommand extends Command
 
                 foreach ($enumClass::cases() as $enum) {
                     $caseList[] = match ($useTypescript) {
-                        true => str_repeat(" ", 4) .
+                        true => str_repeat(' ', 4) .
                             "{$enum->name} = " .
                             $this->printValueAsJs($enum),
-                        false => str_repeat(" ", 4) .
+                        false => str_repeat(' ', 4) .
                             "{$enum->name}: " .
                             $this->printValueAsJs($enum),
                     };
@@ -43,19 +43,19 @@ class PublishEnumsCommand extends Command
                 $jsFileContent = match ($useTypescript) {
                     true => collect([
                         "export enum {$name} {",
-                        collect($caseList)->implode("," . PHP_EOL, ""),
-                        "} as const;",
+                        collect($caseList)->implode(',' . PHP_EOL, ''),
+                        '} as const;',
                     ])->implode(PHP_EOL),
                     false => collect([
                         "export const {$name} = {",
-                        collect($caseList)->implode("," . PHP_EOL, ""),
-                        "};",
+                        collect($caseList)->implode(',' . PHP_EOL, ''),
+                        '};',
                     ])->implode(PHP_EOL),
                 };
 
-                $extension = $useTypescript ? ".ts" : ".enum.js";
+                $extension = $useTypescript ? '.ts' : '.enum.js';
 
-                $jsFilePath = app("publish_enums_registry")->publishPath;
+                $jsFilePath = app('publish_enums_registry')->publishPath;
 
                 $jsFilePathAndName = $jsFilePath . "/{$name}{$extension}";
 
@@ -63,7 +63,7 @@ class PublishEnumsCommand extends Command
 
                 File::put($jsFilePathAndName, $jsFileContent);
 
-                if (!$this->option("compact")) {
+                if (! $this->option('compact')) {
                     info("Published: {$jsFilePathAndName}");
                 }
 
@@ -73,21 +73,21 @@ class PublishEnumsCommand extends Command
             }
         }
 
-        if ($this->option("compact")) {
+        if ($this->option('compact')) {
             info("Published {$published} files.");
         }
     }
 
     private function printValueAsJs(mixed $enum): string
     {
-        if (!$enum instanceof BackedEnum) {
+        if (! $enum instanceof BackedEnum) {
             return '"' . $enum->name . '"';
         }
 
         return match (gettype($enum->value)) {
-            "string" => '"' . $enum->value . '"',
-            "integer", "double" => $enum->value,
-            "boolean" => $enum->value ? "true" : "false",
+            'string' => '"' . $enum->value . '"',
+            'integer', 'double' => $enum->value,
+            'boolean' => $enum->value ? 'true' : 'false',
         };
     }
 }
