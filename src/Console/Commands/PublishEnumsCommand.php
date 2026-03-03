@@ -38,7 +38,7 @@ class PublishEnumsCommand extends Command
                     };
                 }
 
-                $name = new ReflectionClass($enumClass)->getShortName();
+                $name = (new ReflectionClass($enumClass))->getShortName();
 
                 $jsFileContent = match ($useTypescript) {
                     true => collect([

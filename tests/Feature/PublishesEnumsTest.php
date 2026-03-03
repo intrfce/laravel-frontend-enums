@@ -30,7 +30,7 @@ test(
         $this->artisan('publish:enums-to-javascript');
 
         collect(PublishEnums::get())->each(function ($enum) use ($path) {
-            $name = new ReflectionClass($enum)->getShortName();
+            $name = (new ReflectionClass($enum))->getShortName();
             $isTs = PublishEnums::isTypescript($enum);
             $ext = $isTs ? '.ts' : '.enum.js';
             $this->assertFileExists("{$path}/{$name}{$ext}");
@@ -51,7 +51,7 @@ test(
         $this->artisan('publish:enums-to-javascript');
 
         collect(PublishEnums::get())->each(function ($enum) use ($path) {
-            $name = new ReflectionClass($enum)->getShortName();
+            $name = (new ReflectionClass($enum))->getShortName();
             $this->assertFileExists("{$path}/{$name}.ts");
             $contents = file_get_contents("{$path}/{$name}.ts");
             collect($enum::cases())->each(
@@ -86,7 +86,7 @@ test(
         $this->artisan('publish:enums-to-javascript');
 
         // The Sizes enum has #[PublishEnum] so it should be discovered and published.
-        $name = new ReflectionClass(Sizes::class)->getShortName();
+        $name = (new ReflectionClass(Sizes::class))->getShortName();
         $this->assertFileExists("{$path}/{$name}.enum.js");
         $contents = file_get_contents("{$path}/{$name}.enum.js");
         collect(Sizes::cases())->each(
@@ -114,13 +114,13 @@ test(
         $this->artisan('publish:enums-to-javascript');
 
         // Sizes has #[PublishEnum] (no asTypescript) -> should be .enum.js
-        $sizesName = new ReflectionClass(Sizes::class)->getShortName();
+        $sizesName = (new ReflectionClass(Sizes::class))->getShortName();
         $this->assertFileExists("{$path}/{$sizesName}.enum.js");
         $sizesContents = file_get_contents("{$path}/{$sizesName}.enum.js");
         expect($sizesContents)->toContain("export const {$sizesName} = {");
 
         // Statuses has #[PublishEnum(asTypescript: true)] -> should be .ts
-        $statusesName = new ReflectionClass(Statuses::class)->getShortName();
+        $statusesName = (new ReflectionClass(Statuses::class))->getShortName();
         $this->assertFileExists("{$path}/{$statusesName}.ts");
         $statusesContents = file_get_contents("{$path}/{$statusesName}.ts");
         expect($statusesContents)->toContain("export enum {$statusesName} {");
@@ -152,7 +152,7 @@ test(
 
         $this->artisan('publish:enums-to-javascript');
 
-        $name = new ReflectionClass(Directions::class)->getShortName();
+        $name = (new ReflectionClass(Directions::class))->getShortName();
         $this->assertFileExists("{$path}/{$name}.enum.js");
         $contents = file_get_contents("{$path}/{$name}.enum.js");
 
@@ -180,7 +180,7 @@ test(
 
         $this->artisan('publish:enums-to-javascript');
 
-        $name = new ReflectionClass(Directions::class)->getShortName();
+        $name = (new ReflectionClass(Directions::class))->getShortName();
         $this->assertFileExists("{$path}/{$name}.ts");
         $contents = file_get_contents("{$path}/{$name}.ts");
 
@@ -233,11 +233,11 @@ test(
         $this->artisan('publish:enums-to-javascript');
 
         // Sizes has #[PublishEnum] (asTypescript not set) -> should follow config -> .ts
-        $sizesName = new ReflectionClass(Sizes::class)->getShortName();
+        $sizesName = (new ReflectionClass(Sizes::class))->getShortName();
         $this->assertFileExists("{$path}/{$sizesName}.ts");
 
         // Statuses has #[PublishEnum(asTypescript: true)] -> explicitly true -> .ts
-        $statusesName = new ReflectionClass(Statuses::class)->getShortName();
+        $statusesName = (new ReflectionClass(Statuses::class))->getShortName();
         $this->assertFileExists("{$path}/{$statusesName}.ts");
     },
 );
