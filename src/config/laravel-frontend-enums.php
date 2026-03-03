@@ -5,4 +5,5 @@ return [
     'discover_in' => [
         app_path(),
     ],
+    'as_typescript' => false,
 ];

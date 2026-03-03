@@ -8,6 +8,6 @@ use Attribute;
 class PublishEnum
 {
     public function __construct(
-        public bool $asTypescript = false,
+        public ?bool $asTypescript = null,
     ) {}
 }

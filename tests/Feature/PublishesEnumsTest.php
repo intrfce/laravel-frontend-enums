@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\File;
-use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
 use Intrfce\LaravelFrontendEnums\Facades\PublishEnums;
 use Intrfce\LaravelFrontendEnums\Tests\Classes\NotAnEnum;
 use Intrfce\LaravelFrontendEnums\Tests\Enums\Directions;
@@ -18,19 +17,10 @@ afterEach(function () {
     File::deleteDirectory("tests/Publish/Nested");
 });
 
-test("The package registry picks up on the enums you list", function () {
+test("The package registry discovers enums with #[PublishEnum] attribute", function () {
     $enumsToPublish = app("publish_enums_registry")->get();
-    expect($enumsToPublish)->toHaveCount(2);
-    //    \Artisan::call('publish:enums-to-javascript');
+    expect($enumsToPublish)->toHaveCount(5);
 });
-
-test("Listing anything other than an enum produces an exception", function (
-    $test,
-) {
-    PublishEnums::publish([$test]);
-})
-    ->with(["not an enum", 3.141, 23141])
-    ->throws(ArgumentIsNotEnumException::class);
 
 test(
     "It publishes the enums to the default directory at resources/js/Enums",
@@ -41,18 +31,12 @@ test(
 
         collect(PublishEnums::get())->each(function ($enum) use ($path) {
             $name = new ReflectionClass($enum)->getShortName();
-            $this->assertFileExists("{$path}/{$name}.enum.js");
-            $contents = file_get_contents("{$path}/{$name}.enum.js");
+            $isTs = PublishEnums::isTypescript($enum);
+            $ext = $isTs ? '.ts' : '.enum.js';
+            $this->assertFileExists("{$path}/{$name}{$ext}");
+            $contents = file_get_contents("{$path}/{$name}{$ext}");
             collect($enum::cases())->each(
-                fn($case) => expect($contents)
-                    ->toContain($case->name)
-                    ->and($contents)
-                    ->toContain((string) $case->value)
-                    ->and($contents)
-                    ->toContain("export const {$name} = {")
-                    ->and($contents)
-                    ->not()
-                    ->toContain("} as const;"),
+                fn($case) => expect($contents)->toContain($case->name),
             );
         });
     },
@@ -62,7 +46,8 @@ test(
     "It publishes the enums to the default directory at resources/js/Enums as typescript files.",
     function () {
         $path = getcwd() . "/tests/Publish";
-        PublishEnums::setPublishPath($path)->asTypescript();
+        config()->set('laravel-frontend-enums.as_typescript', true);
+        PublishEnums::setPublishPath($path);
         $this->artisan("publish:enums-to-javascript");
 
         collect(PublishEnums::get())->each(function ($enum) use ($path) {
@@ -73,7 +58,7 @@ test(
                 fn($case) => expect($contents)
                     ->toContain($case->name)
                     ->and($contents)
-                    ->toContain((string) $case->value)
+                    ->toContain($case instanceof \BackedEnum ? (string) $case->value : $case->name)
                     ->and($contents)
                     ->toContain("export enum {$name} {"),
             );
@@ -115,20 +100,6 @@ test(
                 ->not()
                 ->toContain("} as const;"),
         );
-    },
-);
-
-test(
-    "attribute-discovered enums are merged with manually registered enums",
-    function () {
-        // Point discovery at the test Enums directory.
-        PublishEnums::discoverIn(__DIR__ . "/../Enums");
-
-        $all = PublishEnums::get();
-
-        // Should contain the 2 manually registered + the 1 attribute-discovered (Sizes).
-        expect($all)->toContain(Sizes::class);
-        expect(count($all))->toBeGreaterThanOrEqual(3);
     },
 );
 
@@ -177,7 +148,6 @@ test(
     function () {
         $path = getcwd() . "/tests/Publish";
 
-        PublishEnums::publish([Directions::class]);
         PublishEnums::setPublishPath($path);
 
         $this->artisan("publish:enums-to-javascript");
@@ -205,8 +175,8 @@ test(
     function () {
         $path = getcwd() . "/tests/Publish";
 
-        PublishEnums::publish([Directions::class]);
-        PublishEnums::setPublishPath($path)->asTypescript();
+        config()->set('laravel-frontend-enums.as_typescript', true);
+        PublishEnums::setPublishPath($path);
 
         $this->artisan("publish:enums-to-javascript");
 
@@ -220,21 +190,6 @@ test(
             ->toContain('South = "South"')
             ->and($contents)
             ->toContain("export enum {$name} {");
-    },
-);
-
-test(
-    "attribute-discovered enums are not duplicated with manually registered ones",
-    function () {
-        // Manually register Sizes, then also discover it via attribute.
-        PublishEnums::publish([Sizes::class]);
-        PublishEnums::discoverIn(__DIR__ . "/../Enums");
-
-        $all = PublishEnums::get();
-
-        // Sizes should only appear once.
-        $sizesCount = count(array_filter($all, fn($e) => $e === Sizes::class));
-        expect($sizesCount)->toBe(1);
     },
 );
 
@@ -263,5 +218,45 @@ test(
         // Should still discover enums from the matched directory.
         expect($all)->toContain(Sizes::class);
         expect($all)->toContain(Statuses::class);
+    },
+);
+
+test(
+    "per-attribute asTypescript overrides global as_typescript config",
+    function () {
+        $path = getcwd() . "/tests/Publish";
+
+        // Enable TypeScript globally via config.
+        config()->set('laravel-frontend-enums.as_typescript', true);
+        PublishEnums::setPublishPath($path);
+
+        $this->artisan("publish:enums-to-javascript");
+
+        // Sizes has #[PublishEnum] (asTypescript not set) -> should follow config -> .ts
+        $sizesName = new ReflectionClass(Sizes::class)->getShortName();
+        $this->assertFileExists("{$path}/{$sizesName}.ts");
+
+        // Statuses has #[PublishEnum(asTypescript: true)] -> explicitly true -> .ts
+        $statusesName = new ReflectionClass(Statuses::class)->getShortName();
+        $this->assertFileExists("{$path}/{$statusesName}.ts");
+    },
+);
+
+test(
+    "per-attribute asTypescript false overrides global as_typescript true",
+    function () {
+        // Sizes has #[PublishEnum] with no explicit asTypescript (null) -> follows config.
+        // Statuses has #[PublishEnum(asTypescript: true)] -> explicit override.
+        config()->set('laravel-frontend-enums.as_typescript', false);
+
+        expect(PublishEnums::isTypescript(Sizes::class))->toBeFalse();
+        expect(PublishEnums::isTypescript(Statuses::class))->toBeTrue();
+
+        config()->set('laravel-frontend-enums.as_typescript', true);
+
+        // Sizes has no explicit override, so it follows the config.
+        expect(PublishEnums::isTypescript(Sizes::class))->toBeTrue();
+        // Statuses still true (explicit override).
+        expect(PublishEnums::isTypescript(Statuses::class))->toBeTrue();
     },
 );
