@@ -2,8 +2,11 @@
 
 namespace Intrfce\LaravelFrontendEnums;
 
+use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
 use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
+use ReflectionClass;
 use ReflectionException;
+use Spatie\StructureDiscoverer\Discover;
 
 class Registry
 {
@@ -12,6 +15,8 @@ class Registry
     public bool $asTypescript = false;
 
     public string $publishPath = '';
+
+    public array $discoveryDirectories = [];
 
     public function __construct()
     {
@@ -35,9 +40,18 @@ class Registry
         return $this;
     }
 
+    public function discoverIn(string ...$directories): self
+    {
+        $this->discoveryDirectories = array_merge($this->discoveryDirectories, $directories);
+
+        return $this;
+    }
+
     public function get(): array
     {
-        return $this->toPublish;
+        return array_values(array_unique(
+            array_merge($this->toPublish, $this->discoverEnumsWithAttribute())
+        ));
     }
 
     public function asTypescript(): self
@@ -47,11 +61,45 @@ class Registry
         return $this;
     }
 
+    public function isTypescript(string $enumClass): bool
+    {
+        if ($this->asTypescript) {
+            return true;
+        }
+
+        $reflection = new ReflectionClass($enumClass);
+        $attributes = $reflection->getAttributes(PublishEnum::class);
+
+        if (empty($attributes)) {
+            return false;
+        }
+
+        return $attributes[0]->newInstance()->asTypescript;
+    }
+
     public function toDirectory(string $path): self
     {
         $this->publishPath = $path;
 
         return $this;
+    }
+
+    protected function discoverEnumsWithAttribute(): array
+    {
+        $directories = ! empty($this->discoveryDirectories)
+            ? $this->discoveryDirectories
+            : [app_path()];
+
+        $existing = array_filter($directories, fn (string $dir) => is_dir($dir));
+
+        if (empty($existing)) {
+            return [];
+        }
+
+        return Discover::in(...$existing)
+            ->enums()
+            ->withAttribute(PublishEnum::class)
+            ->get();
     }
 
     /**

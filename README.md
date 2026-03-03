@@ -16,6 +16,35 @@ composer require intrfce/laravel-frontend-enums
 
 ## Usage
 
+
+### Add an attribute
+
+To mark an enum to publish to the front-end, you can add an attribute to the top of the class:
+
+```php
+use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
+
+#[PublishEnum]
+enum MyEnum: string {
+
+}
+```
+
+You can publish it as a typescript enum by setting `asTypescript` to the true.
+
+```php
+use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
+
+#[PublishEnum(asTypescript: true)]
+enum MyEnum: string {
+  
+}
+```
+
+
+### In your service provider
+
+
 In your `AppServiceProvider.php`, tell the package which Enums you want to publish:
 
 ```php

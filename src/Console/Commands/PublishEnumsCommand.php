@@ -2,6 +2,7 @@
 
 namespace Intrfce\LaravelFrontendEnums\Console\Commands;
 
+use BackedEnum;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use ReflectionClass;
@@ -27,8 +28,10 @@ class PublishEnumsCommand extends Command
 
             if (class_exists($enumClass)) {
 
+                $useTypescript = $registry->isTypescript($enumClass);
+
                 foreach ($enumClass::cases() as $enum) {
-                    $caseList[] = match ($registry->asTypescript) {
+                    $caseList[] = match ($useTypescript) {
                         true => str_repeat(' ', 4) . "{$enum->name} = " . $this->printValueAsJs($enum),
                         false => str_repeat(' ', 4) . "{$enum->name}: " . $this->printValueAsJs($enum),
                     };
@@ -36,7 +39,7 @@ class PublishEnumsCommand extends Command
 
                 $name = (new ReflectionClass($enumClass))->getShortName();
 
-                $jsFileContent = match ($registry->asTypescript) {
+                $jsFileContent = match ($useTypescript) {
                     true => collect([
                         "export enum {$name} {",
                         collect($caseList)->implode(',' . PHP_EOL, ''),
@@ -45,11 +48,11 @@ class PublishEnumsCommand extends Command
                     false => collect([
                         "export const {$name} = {",
                         collect($caseList)->implode(',' . PHP_EOL, ''),
-                        '};',
+                        '} as const;',
                     ])->implode(PHP_EOL)
                 };
 
-                $extension = $registry->asTypescript ? '.ts' : '.enum.js';
+                $extension = $useTypescript ? '.ts' : '.enum.js';
 
                 $jsFilePath = app('publish_enums_registry')->publishPath;
 
@@ -78,6 +81,10 @@ class PublishEnumsCommand extends Command
 
     private function printValueAsJs(mixed $enum): string
     {
+        if (! $enum instanceof BackedEnum) {
+            return '"' . $enum->name . '"';
+        }
+
         return match (gettype($enum->value)) {
             'string' => '"' . $enum->value . '"',
             'integer', 'double' => $enum->value,
