@@ -7,5 +7,5 @@ use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
 #[PublishEnum]
 class NotAnEnum
 {
-    public const Active = 'active';
+    public const ACTIVE = 'active';
 }

@@ -22,7 +22,7 @@
     "spatie/php-structure-discoverer": "^2.0"
   },
   "require-dev": {
-    "orchestra/testbench": "^9.0 || ^10.0",
+    "orchestra/testbench": "^9.5 || ^10.0",
     "pestphp/pest": "^2.32 || ^3.7",
     "tightenco/duster": "^2.5"
   },
