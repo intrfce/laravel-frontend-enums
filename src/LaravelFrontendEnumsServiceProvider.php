@@ -22,7 +22,7 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('laravel-frontend-enums.php'),
+                __DIR__ . '/config/laravel-frontend-enums.php' => config_path('laravel-frontend-enums.php'),
             ], 'config');
 
             // Publishing the views.
@@ -52,8 +52,7 @@ class LaravelFrontendEnumsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // // Automatically apply the package configuration
-        // $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'laravel-frontend-enums');
+        $this->mergeConfigFrom(__DIR__ . '/config/laravel-frontend-enums.php', 'laravel-frontend-enums');
 
         // Register the main class to use with the facade
         $this->app->singleton('publish_enums_registry', function () {

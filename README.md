@@ -17,88 +17,83 @@ composer require intrfce/laravel-frontend-enums
 ## Usage
 
 
-### Add an attribute
+### Mark enums for publishing
 
-To mark an enum to publish to the front-end, you can add an attribute to the top of the class:
+Add the `#[PublishEnum]` attribute to any enum you want published to the frontend:
 
 ```php
 use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
 
 #[PublishEnum]
 enum MyEnum: string {
-
+    case Foo = 'foo';
+    case Bar = 'bar';
 }
 ```
 
-You can publish it as a typescript enum by setting `asTypescript` to the true.
-
-```php
-use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
-
-#[PublishEnum(asTypescript: true)]
-enum MyEnum: string {
-  
-}
-```
-
-
-### In your service provider
-
-
-In your `AppServiceProvider.php`, tell the package which Enums you want to publish:
-
-```php
-
-use Intrfce\LaravelFrontendEnums\Facades\PublishEnums;
-
-PublishEnums::publish([
-    \App\Enums\MyEnum::class,
-    \App\Enums\MyOtherEnum::class,
-])->toDirectory(resource_path('js/Enums'));
-```
 Then run the publish command:
 
-```php
+```bash
 php artisan publish:enums-to-javascript
 ```
 
-Your enums will be waiting at the path you specified with the extension `.enum.js`:
+Your enums will be waiting at `resources/js/Enums` with the extension `.enum.js`:
 
-```
-MyEnum.enum.js
-MyOtherEnum.enum.js
-```
-
-You can then import and use them in your JavaScript code:
-
-```js  
+```js
 import {MyEnum} from './Enums/MyEnum.enum.js';
-import {MyOtherEnum} from './Enums/MyOtherEnum.enum.js';
 
-console.log(MyEnum.FOO); // 0
-console.log(MyOtherEnum.BAR); // 'bar'
+console.log(MyEnum.Foo); // 'foo'
+```
+
+### Configuration
+
+Publish the config file to customise the output path and discovery directories:
+
+```bash
+php artisan vendor:publish --tag=config --provider="Intrfce\LaravelFrontendEnums\LaravelFrontendEnumsServiceProvider"
+```
+
+```php
+// config/laravel-frontend-enums.php
+return [
+    'publish_to' => resource_path('js/Enums'),
+    'discover_in' => [
+        app_path(),
+    ],
+];
+```
+
+The `discover_in` array supports glob patterns, which is useful for modular or monorepo layouts:
+
+```php
+'discover_in' => [
+    app_path(),
+    base_path('app-modules/*/src'),
+],
 ```
 
 ## Typescript Support
 
-Typescript support is baked in: just add `->asTypescript()` to the list of enums in your `AppServiceProvider.php`:
+Enable TypeScript output globally via the config file:
 
 ```php
-PublishEnums::publish([
-    \App\Enums\MyEnum::class,
-    \App\Enums\MyOtherEnum::class,
-])
-->asTypescript()
-->toDirectory(resource_path('js/Enums'));
+'as_typescript' => true,
 ```
 
-Files will be output as `.ts` files and Typescript native enums:
+Or override per-enum using the attribute:
+
+```php
+#[PublishEnum(asTypescript: true)]  // Force TypeScript for this enum
+#[PublishEnum(asTypescript: false)] // Force JavaScript for this enum
+#[PublishEnum]                      // Follow the global config setting
+```
+
+TypeScript enums are output as `.ts` files:
 
 ```ts
 export enum MyEnum {
-    FOO = 0,
-    BAR = 1,
-    BAZ = 2,
+    Foo = "foo",
+    Bar = "bar",
 }
 ```
 
