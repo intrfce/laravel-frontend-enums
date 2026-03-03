@@ -86,11 +86,19 @@ class Registry
 
     protected function discoverEnumsWithAttribute(): array
     {
-        $directories = ! empty($this->discoveryDirectories)
-            ? $this->discoveryDirectories
-            : [app_path()];
+        $configDirectories = config('laravel-frontend-enums.discover_in', [app_path()]);
+        $directories = array_merge($this->discoveryDirectories, $configDirectories);
 
-        $existing = array_filter($directories, fn (string $dir) => is_dir($dir));
+        $resolved = [];
+        foreach ($directories as $dir) {
+            if (str_contains($dir, '*') || str_contains($dir, '?') || str_contains($dir, '[')) {
+                $resolved = array_merge($resolved, glob($dir, GLOB_ONLYDIR) ?: []);
+            } else {
+                $resolved[] = $dir;
+            }
+        }
+
+        $existing = array_values(array_unique(array_filter($resolved, fn (string $dir) => is_dir($dir))));
 
         if (empty($existing)) {
             return [];

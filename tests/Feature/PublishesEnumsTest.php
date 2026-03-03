@@ -237,3 +237,31 @@ test(
         expect($sizesCount)->toBe(1);
     },
 );
+
+test(
+    "enums are discovered from directories configured in the config file",
+    function () {
+        // Set config to point at test Enums directory (instead of app_path()).
+        config()->set('laravel-frontend-enums.discover_in', [__DIR__ . "/../Enums"]);
+
+        $all = PublishEnums::get();
+
+        // Should discover Sizes and Statuses via #[PublishEnum] attribute.
+        expect($all)->toContain(Sizes::class);
+        expect($all)->toContain(Statuses::class);
+    },
+);
+
+test(
+    "glob patterns in discover_in config are resolved to directories",
+    function () {
+        // Use a glob pattern that matches the test Enums directory.
+        config()->set('laravel-frontend-enums.discover_in', [__DIR__ . "/../Enu*"]);
+
+        $all = PublishEnums::get();
+
+        // Should still discover enums from the matched directory.
+        expect($all)->toContain(Sizes::class);
+        expect($all)->toContain(Statuses::class);
+    },
+);
