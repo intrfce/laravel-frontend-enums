@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\File;
 use Intrfce\LaravelFrontendEnums\Exceptions\ArgumentIsNotEnumException;
 use Intrfce\LaravelFrontendEnums\Facades\PublishEnums;
+use Intrfce\LaravelFrontendEnums\Tests\Classes\NotAnEnum;
 use Intrfce\LaravelFrontendEnums\Tests\Enums\Sizes;
 use Intrfce\LaravelFrontendEnums\Tests\Enums\Statuses;
 
@@ -120,6 +121,16 @@ test('PublishEnum attribute with asTypescript publishes as .ts while others rema
     $this->assertFileExists("{$path}/{$statusesName}.ts");
     $statusesContents = file_get_contents("{$path}/{$statusesName}.ts");
     expect($statusesContents)->toContain("export enum {$statusesName} {");
+});
+
+test('non-enum classes with #[PublishEnum] attribute are not discovered', function () {
+    // Scan a directory that contains both enums and a regular class with #[PublishEnum].
+    PublishEnums::discoverIn(__DIR__ . '/../Enums', __DIR__ . '/../Classes');
+
+    $all = PublishEnums::get();
+
+    // NotAnEnum has #[PublishEnum] but is a class, not an enum — it should be excluded.
+    expect($all)->not->toContain(NotAnEnum::class);
 });
 
 test('attribute-discovered enums are not duplicated with manually registered ones', function () {
