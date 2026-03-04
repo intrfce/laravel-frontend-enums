@@ -44,7 +44,7 @@ class PublishEnumsCommand extends Command
                     true => collect([
                         "export enum {$name} {",
                         collect($caseList)->implode(',' . PHP_EOL, ''),
-                        '} as const;',
+                        '};',
                     ])->implode(PHP_EOL),
                     false => collect([
                         "export const {$name} = {",
