@@ -4,7 +4,25 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/intrfce/laravel-frontend-enums.svg?style=flat-square)](https://packagist.org/packages/intrfce/laravel-frontend-enums)
 ![GitHub Actions](https://github.com/intrfce/laravel-frontend-enums/actions/workflows/main.yml/badge.svg)
 
-Publish your PHP enums to the frontend of our application so you can refer to them in your JavaScript code.
+Publish your PHP enums to the front-end of your application, so you can refer to them in your JavaScript code.
+
+This means less reliance on "magic strings".
+
+```js
+
+// Before:
+
+if (myValue === 'name') {
+  // Do something
+}
+
+// After
+import {UserProfileField} from './UserProfileField.enum.js';
+
+if (myValue === UserProfileField.Name) {
+  // Do something.
+}
+````
 
 ## Installation
 
@@ -17,9 +35,9 @@ composer require intrfce/laravel-frontend-enums
 ## Usage
 
 
-### Mark enums for publishing
+### Just add the attribute!
 
-Add the `#[PublishEnum]` attribute to any enum you want published to the frontend:
+Add the `#[PublishEnum]` attribute to any enum you want published to the frontend - it's that easy.
 
 ```php
 use Intrfce\LaravelFrontendEnums\Attributes\PublishEnum;
@@ -56,10 +74,18 @@ php artisan vendor:publish --tag=config --provider="Intrfce\LaravelFrontendEnums
 ```php
 // config/laravel-frontend-enums.php
 return [
+    
+    // Customise the output directory.
     'publish_to' => resource_path('js/Enums'),
+    
+    // Customise the folders scanned for enum classes
     'discover_in' => [
         app_path(),
     ],
+    
+    // Always output as typescript enums.
+    'as_typescript' => true,
+    
 ];
 ```
 
