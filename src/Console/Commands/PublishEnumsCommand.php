@@ -84,10 +84,10 @@ class PublishEnumsCommand extends Command
             return '"' . $enum->name . '"';
         }
 
-        return match (gettype($enum->value)) {
-            'string' => '"' . $enum->value . '"',
-            'integer', 'double' => $enum->value,
-            'boolean' => $enum->value ? 'true' : 'false',
+        return match (true) {
+            is_string($enum->value) => '"' . $enum->value . '"',
+            is_int($enum->value), is_float($enum->value) => $enum->value,
+            is_bool($enum->value) => $enum->value ? 'true' : 'false',
         };
     }
 }
