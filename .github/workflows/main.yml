@@ -18,6 +18,7 @@ jobs:
             testbench: 10.*
           - laravel: 13.*
             testbench: 11.*
+            stability: dev
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
 
@@ -36,6 +37,10 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Set minimum stability
+        if: ${{ matrix.stability }}
+        run: composer config minimum-stability ${{ matrix.stability }}
 
       - name: Install dependencies
         run: |
